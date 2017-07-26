@@ -1,4 +1,7 @@
 本项目主要关于本人在前端学习与实践的总结，实践是最好的老师。
+文章与本人博客同步，欢迎来踩:smile::smile::bowtie::bowtie:～
+
+:point_right::point_right:[perkinzone](http://www.perkinzone.cn)
 #### ExperienceIsTheBestTeacher
 
 1. FrontEnd
