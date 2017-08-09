@@ -26,7 +26,7 @@ tags: [算法,raphael.js,svg]
 
 我们先来看看效果：
 
-![image](https://github.com/PerkinJ/ExperienceIsTheBestTeacher/blob/master/resource/2017%3A08%3A09.gif)
+![image](https://github.com/PerkinJ/ExperienceIsTheBestTeacher/blob/master/resource/20170809.gif)
 
 这是具体操作的情况，我们可以看到，画凸四边形跟三角形时，弹窗弹了true，表明为凸变形，画凹四边形，表明为凹变形。
 
