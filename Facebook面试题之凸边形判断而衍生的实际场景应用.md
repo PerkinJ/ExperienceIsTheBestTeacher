@@ -1,5 +1,5 @@
 ---
-title: 由Facebook面试题：判断是否为凸边形而想到实际场景的应用
+title: Facebook面试题之凸边形判断而衍生的实际场景应用
 category: FrontEnd
 tags: [算法,raphael.js,svg]
 ---
