@@ -17,7 +17,7 @@ tags: [算法,raphael.js,svg]
 - 叉乘法：即利用两条向量叉乘的结果，来判断。根据向量的叉积我们就可以判断这个多边形的内角是否均小于180度，相邻两条边的向量均保持顺时针或逆时针旋转才符合条件。
 >A,B同为向量，**|A×B|=Ax*By-Ay*Bx，若这个值大于0，则说明B指向A逆时针旋转0到180的方向，若这个值小于0，则说明B指向A顺时针旋转0到180的方向，若等于0，则两向量共线。**
 
-====需要注意的是==，我们需要额外判断一下(n-1,n)×(n,0)和(n,0)×(0,1)这两个叉积。并且叉积为0(即相邻的边共线，但不包括所有点共线)在本题中是可以被接受的。==
+需要注意的是，我们需要额外判断一下(n-1,n)×(n,0)和(n,0)×(0,1)这两个叉积。并且叉积为0(即相邻的边共线，但不包括所有点共线)在本题中是可以被接受的。==
 
 - ...还有多种数学方法
 
@@ -26,11 +26,11 @@ tags: [算法,raphael.js,svg]
 
 我们先来看看效果：
 
-![image](https://github.com/PerkinJ/ExperienceIsTheBestTeacher/resource/2017/08/09.gif)
+![image](https://github.com/PerkinJ/ExperienceIsTheBestTeacher/blob/master/resource/2017%3A08%3A09.gif)
 
 这是具体操作的情况，我们可以看到，画凸四边形跟三角形时，弹窗弹了true，表明为凸变形，画凹四边形，表明为凹变形。
 
-查看demo请点击：[demo]()
+查看demo请点击：[demo](http://perkinzone.cn/raphael-draw/)
 
 下面是具体的代码实现：
 ```javascript
