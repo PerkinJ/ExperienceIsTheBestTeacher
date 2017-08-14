@@ -329,6 +329,7 @@ dispatch = f1(f2(f3(store.dispatch)))
 4. 在middleware中调用dispatch
 
 ![image](http://oum6ifofe.bkt.clouddn.com/image/v2-e5b8f433fec45c09260759fb12e90bb6_b.png)
+
 从上图中得出结论，middleware通过next(action)一层层处理和传递action直到redux原生的dispatch。而如果某个middleware使用store.dispatch(action)来分发action，就相当于重新来一遍。
 
 **在middleware中使用dispatch的场景一般是接受一个定向action，这个action并不希望到达原生的分发action,往往用在一步请求的需求里，比如上面提到的redux-thunk，就是直接接受dispatch。**
