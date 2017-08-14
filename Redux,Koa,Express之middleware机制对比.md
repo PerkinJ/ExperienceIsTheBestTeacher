@@ -21,10 +21,9 @@ Koa1 | generator/yield+co
 Koa2 | Async/Await
 Redux | redux-thunk,redux-saga,redux-promise等
 
-- ##### express: 由于是在ES6之前出现的，所以中间件的基础原理还是callback方式
-- ##### koa: koa1得益于generator特性并通过co框架加入了自动流程管理。（co会把所有generator的返回封装成为Promise对象）koa2则使用了Async/Await的形式（仅仅知识genertator函数的语法糖）
-
--  ##### redux: 论redux的异步变成，更准确的应该是异步的action的方式。解决异步action的方式有多种，比如：redux-thunk,redux-saga,redux-promise等
+- express: 由于是在ES6之前出现的，所以中间件的基础原理还是callback方式
+- koa: koa1得益于generator特性并通过co框架加入了自动流程管理。（co会把所有generator的返回封装成为Promise对象）koa2则使用了Async/Await的形式（仅仅知识genertator函数的语法糖）
+- redux: 论redux的异步变成，更准确的应该是异步的action的方式。解决异步action的方式有多种，比如：redux-thunk,redux-saga,redux-promise等
 
 > 本文并不会对js里的异步编程作详细，推荐阮一峰老师写的《深入掌握 ECMAScript 6 异步编程》系列文章。
 
@@ -334,12 +333,26 @@ dispatch = f1(f2(f3(store.dispatch)))
 
 **在middleware中使用dispatch的场景一般是接受一个定向action，这个action并不希望到达原生的分发action,往往用在一步请求的需求里，比如上面提到的redux-thunk，就是直接接受dispatch。**
 
-下面我们来总结一下三者的关系
-框架 | 运行逻辑
----|---
-express | 1.中间件为一个方法接受 req,res,next三个参数。2. 中间可以执行任何方法包括异步方法。3. 最后一定要通过res.end或者next来通知结束这个中间件方法。4. 如果没有执行res.end或者next访问会一直卡着不动直到超时。5.并且在这之后的中间件也会没法执行到。
-koa | 1. 中间件为一个方法接受 req,res,next 三个参数。2. 中间可以执行任何方法包括异步方法。3. 最后一定要通过res.end或者next来通知结束这个中间件方法。4. 如果没有执行res.end或者next访问会一直卡着不动直到超时。5.并且在这之后的中间件也会没法执行到。
-Redux | 1. 函数式编程思想设计 2， 给middleware分发store 3. 组合串联middlware 4. 在middleware调用dispatch
+下面我们来总结一下三者的区别
+
+express 
+ 1. 中间件为一个方法，接受 req,res,next三个参数。
+ 2. 中间可以执行任何方法包括异步方法。
+ 3. 最后一定要通过res.end或者next来通知结束这个中间件方法。
+ 4. 如果没有执行res.end或者next访问会一直卡着不动直到超时。
+ 5. 并且在这之后的中间件也会没法执行到。
+koa 
+1. 中间件为一个方法或者其它，接受ctx,next两个参数。
+2. 方法中可以执行任何同步方法。可以使用返回一个Promise来做异步。
+3. 中间件通过方法结束时的返回来判断是否进入下一个中间件。
+4. 返回一个Promise对象koa会等待异步通知完成。then中可以返回next()来跳转到下一个中间件。
+5. 如果Promise没有异步通知也会卡住。
+Redux 
+1. 中间件为一个方法，接受store参数。
+2. 中间可以执行任何方法包括异步方法。
+3. 中间件通过组合串联middlware。
+4. 通过next(action)处理和传递action直到redux原生的dispatch,或者使用store.dispatch(actio)来分发action。
+5. 如果一只简单粗暴调用store.dispatch(action)，就会形成无限循环。
 
 
 
