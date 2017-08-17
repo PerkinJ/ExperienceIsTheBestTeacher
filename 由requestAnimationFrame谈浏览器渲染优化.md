@@ -150,7 +150,7 @@ li{
     const batchCount = total / batchSize; // 需要批量处理多少次
     let batchDone = 0;  // 已经完成的批处理个数
     
-    function getRandomColor{
+    function getRandomColor(){
       return '#'+Math.floor(Math.random()*16777215).toString(16);
     }
     
