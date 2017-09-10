@@ -102,12 +102,14 @@ document.getElementsByTagName('head')[o].appendChild(s)
 #### XSS的防御
 - 避免使用客户端数据，尽量服务端生成
 - javascript变量输出时先编码
-- XSS过滤(js-css,http://jsxss.com)
+- XSS过滤(js-xss,http://jsxss.com)
 - CSP(content security policy):通过在http响应头中加入相关指令告知浏览器，被保护页面仅允许加载和执行指令中限制的内容，不满足的资源与内容不执行或被客户端阻断
 
 
 ### 跨站请求伪造-CSRF
-Cross-Site Request Forgery Forgery,普通用户在正常源站点登录后，在另外的中转站点执行了对源站点的请求(由恶意用户构造)，该请求利用源站点普通用户已有的登录态，来执行恶意用户的操作。
+Cross-Site Request Forgery 
+
+Forgery,普通用户在正常源站点登录后，在另外的中转站点执行了对源站点的请求(由恶意用户构造)，该请求利用源站点普通用户已有的登录态，来执行恶意用户的操作。
 
 #### CSRF攻击防御
 CSRF攻击防御-->服务端生成CSRF Token-->
