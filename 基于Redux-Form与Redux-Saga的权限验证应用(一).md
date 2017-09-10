@@ -115,7 +115,7 @@ ReactDOM.render(
 ```javascript
 // Import the index reducer and sagas
 import IndexReducer from './index-reducer'  
-import IndexSagas from './index-sagas
+import IndexSagas from './index-sagas'
 const sagaMiddleware = createSagaMiddleware()
 
 ```
