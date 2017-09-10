@@ -49,7 +49,7 @@ e) 启动项目
 npm start
 ```
 f) 创建目录结构
-```
+```bash
 src/  
   login/ # 不同的容器对应不同的路由
     sagas.js # 存储跟api调用有关的saga
@@ -128,7 +128,7 @@ const composeSetup = process.env.NODE_ENV !== 'production' && typeof window === 
 ```
 
 #### 4. 开始saga
-```
+```js
 const store = createStore(  
   IndexReducer,
   composeSetup(applyMiddleware(sagaMiddleware)), // 使用Redux Devtool 去跟踪saga
@@ -147,19 +147,26 @@ a) 提供一个全局store，去存储应用的state，这里与内部的state�
 
 b) 提供reducers给tore。就好比是每个省的省长，当遇到一些要改变省内状态的事情时，他们来决定是否接受或拒绝。
 
-c) 通过```<provider store={store}/>```传递，使得我们的应用能够拿到这个全局状态
+c) 通过
+
+```js
+<provider store={store}/>
+```
+
+传递，使得我们的应用能够拿到这个全局状态
 
 d)app分发actions
 
 e)对于reducers来说，如果action与他们有关，便会捕获，修正他们的状态(纯函数的方式)
 
 f)当全局状态改变，被connected的app会接收这个改变，会再次渲染我们的react组件。
-### 模块搭建
 
+
+### 组件设计
 ---
+
 #### 1. The Client State
 client模块主要是保存用户登录之后的token信息，此token为JWT(后文详细介绍)。
-
 
 ```javascript
 // client存储的初始state
@@ -168,7 +175,9 @@ const initialState = {
   token: null,
 }
 ```
+
 - 设置action
+
 ```javascript
 import { CLIENT_SET, CLIENT_UNSET } from './constants'
 
@@ -186,7 +195,9 @@ export function unsetClient () {
 }
 
 ```
+
 - 设置reducer
+
 ```javascript
 import { CLIENT_SET, CLIENT_UNSET } from './constants'
 
@@ -240,16 +251,71 @@ export default signupRequest
 ```
 为了保持我们的actions是纯(pure)的,我们将所有异步的操作交给saga来完成。（与thunk不同的是，在这里saga将ations抽成了promises chain来处理）
 
+#### 3. messages/error view
+我们需要一个公用的组件来提示异步请求成功或者失败。
+```javascript
+// src/notifications/messages.js
+import React, { PropTypes } from 'react'
 
-#### 3. The Signup View
-在这之前，我们先花一点功夫介绍下redux-form。为什么要用redux-form呢？想象一下，如果用state来保存要提交的数据，用onChange来获取用户输入，然后改变state中相应数据荐，简直是梦魇一般。**如果使用Redux跟Redux-form,redux用来管理状态，redux-form来负责表单数据部分。**
+const Messages = (props) => {  
+  const { messages } = props
+  return (
+    <div>
+      <ul>
+        {messages.map(message => (
+          <li key={message.time}>{message.body}</li>
+        ))}
+      </ul>
+    </div>
+  )
+}
 
-a) redux-form主要有以下特点：
+Messages.propTypes = {  
+  messages: PropTypes.arrayOf(
+      PropTypes.shape({
+        body: PropTypes.string,
+        time: PropTypes.date,
+      })),
+}
+
+export default Messages  
+```
+```javascript
+//src/notifications/Errors.js
+import React, { PropTypes } from 'react'
+
+const Errors = (props) => {  
+  const { errors } = props
+  return (
+    <div>
+      <ul>
+        {errors.map(errors => (
+          <li key={errors.time}>{errors.body}</li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+Errors.propTypes = {  
+  errors: PropTypes.arrayOf(
+      PropTypes.shape({
+        body: PropTypes.string,
+        time: PropTypes.date,
+      })),
+}
+
+export default Errors  
+```
+### Redux-Form
+我们先花一点功夫介绍下redux-form。为什么要用redux-form呢？想象一下，如果用state来保存要提交的数据，用onChange来获取用户输入，然后改变state中相应数据荐，简直是梦魇一般。**如果使用Redux跟Redux-form,redux用来管理状态，redux-form来负责表单数据部分。**
+
+#### 1. redux-form主要特点
 - formReducer (reducer) :表单的各种操作以 Redux action 的方式，通过此 reducer 来促使 Redux store 数据的变化。
 - reduxForm() (HOC):属于react装饰器，此高阶组件用以整合 Redux action 绑定的用户交互与您的组件，并返回一个新的组件供以使用。
 - <Field/>:一个Filed组件将用户输入与redux store相连接
 
-b) 数据流:
+#### 2. 数据流
 
 ![image](http://oum6ifofe.bkt.clouddn.com/image/reduxFormDiagram.png)
 数据流大概是这个样子的:
@@ -358,11 +424,11 @@ export default formed
 ```
 提交的数据以JSON对象的形式注入了此表单组件的 onSubmit方法里了，可以打印出来看
 
-c) 表单value的生命周期:
+#### 3. 表单value的生命周期
 
 ![image](https://github.com/erikras/redux-form/raw/master/docs/valueLifecycle.png)
 
-d) API
+#### 4. API
 
 这里只介绍本文使用的api，详细的api请移步[官方文档](http://redux-form.com/6.8.0/docs/api/)
 
@@ -404,7 +470,8 @@ const IndexReducer = combineReducers({
 
 export default IndexReducer
 ```
-以上就是Redux-Form的基本介绍。
+以上就是Redux-Form的基本介绍，到目前为止，我们完成了注册部分，如下图所示：
+![image](http://oum6ifofe.bkt.clouddn.com/image/sagademo.jpg)
 
 ### 总结
 1. 项目的基本搭建
