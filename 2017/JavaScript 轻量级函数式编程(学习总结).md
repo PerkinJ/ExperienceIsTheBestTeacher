@@ -1,4 +1,10 @@
->最近在[学习JavaScript 轻量级函数式编程](https://link.juejin.im/?target=https%3A%2F%2Fgithub.com%2Fgetify)的教程，Kyle Simpson作者也是《You-Dont-Know-JS》的作者，感谢译者团队（文中有提到），对于初学函数式编程来说，直接看英文文档还是很吃力的，毕竟很多概念不容易理解，建议看完这个系列译文之后，再回过头来看看英文教程。下面是我对学习中出现的一些概念以及重点做了一些概要，方便自己今后回顾，也方便其他小伙伴学习了解。
+---
+title: JavaScript 轻量级函数式编程(学习总结)
+category: 前端
+cdn: 'header-on'
+tags: [函数式编程]
+---
+>最近在[学习JavaScript 轻量级函数式编程](https://link.juejin.im/?target=https%3A%2F%2Fgithub.com%2Fgetify)的教程，Kyle Simpson作者也是《You-Dont-Know-JS》的作者，感谢译者团队翻译的[《JavaScript 轻量级函数式编程》](https://juejin.im/post/599a7d8a518825242147afe8)（文中有提到），对于初学函数式编程来说，直接看英文文档还是很吃力的，毕竟很多概念不容易理解，建议看完这个系列译文之后，再回过头来看看英文教程。下面是我对学习中出现的一些概念以及重点做了一些概要，方便自己今后回顾，也方便其他小伙伴学习了解。
 ## 函数基础
 #### 函数输入
 arguments 是你输入的值（实参）， parameters 是函数中的命名变量（形参），用于接收函数的输入值。
@@ -285,3 +291,54 @@ var [ a ,,, b ] = getData();
 
 ### 减少副作用 
 写出有副作用/效果的代码是很正常的， 所以我们需要谨慎和刻意地避免产生有副作用的代码。
+
+#### 潜在的原因
+- 输出和状态的变化，是最常被引用的副作用的表现。
+- 随机性
+
+    比如随机函数Math.random()
+
+- I/O 效果
+
+    事实上，这些来源既可以是输入也可以是输出，是因也是果。以 DOM 为例，我们更新（产生副作用的结果）一个 DOM 元素为了给用户展示文字或图片信息，但是 DOM 的当前状态是对这些操作的隐式输入（产生副作用的原因）。
+
+- 其他的错误
+
+#### 一次就好
+如果你必须要使用副作用来改变状态，那么一种对限制潜在问题有用的操作是幂等。
+- 数学中的幂等：幂等指的是在第一次调用后，如果你将该输出一次又一次地输入到操作中，其输出永远不会改变的操作。换句话说，foo(x) 将产生与 foo(foo(x))、foo(foo(foo(x))) 等相同的输出。
+
+    比如：
+    一个典型的数学例子是 Math.abs(..)（取绝对值）。Math.abs(-2) 的结果是 2，和 Math.abs(Math.abs(Math.abs(Math.abs(-2)))) 的结果相同。像Math.min(..)、Math.max(..)、Math.round(..)、Math.floor(..) 和 Math.ceil(..)这些工具函数都是幂等的。
+    
+- 编程中的幂等：编程中的幂等仅仅是 f(x); 的结果与 f(x); f(x) 相同而不是要求 f(x) === f(f(x))。换句话说，之后每一次调用 f(x) 的结果和第一次调用 f(x) 的结果没有任何改变。
+    
+    > 这种幂等性的方式经常被用于 HTTP 操作（动词），例如 GET 或 PUT。如果 HTTP REST API 正确地遵循了幂等的规范指导，那么 PUT 被定义为一个更新操作，它可以完全替换资源。同样的，客户端可以一次或多次发送 PUT 请求（使用相同的数据），而服务器无论如何都将具有相同的结果状态。
+
+
+幂等与非幂等
+```javascript
+// 幂等的：
+obj.count = 2;
+a[a.length - 1] = 42;
+person.name = upper( person.name );
+
+// 非幂等的：
+obj.count++;
+a[a.length] = 42;
+person.lastUpdated = Date.now();
+```
+这里的幂等性的概念是每一个幂等运算（比如 obj.count = 2）可以重复多次，而不是在第一次更新后改变程序操作。非幂等操作每次都改变状态。
+```javascript
+var hist = document.getElementById( "orderHistory" );
+
+// 幂等的：
+hist.innerHTML = order.historyText;
+
+// 非幂等的：
+var update = document.createTextNode( order.latestUpdate );
+hist.appendChild( update );
+```
+这里的关键区别在于，幂等的更新替换了 DOM 元素的内容。DOM 元素的当前状态是独立的，因为它是无条件覆盖的。非幂等的操作将内容添加到元素中；隐式地，DOM 元素的当前状态是计算下一个状态的一部分。
+
+没有副作用的函数称为**纯函数**。在编程的意义上，纯函数是一种幂等函数，因为它不可能有任何副作用。
