@@ -5,6 +5,7 @@
 #### ExperienceIsTheBestTeacher
 
 1. FrontEnd
+    - [基于React的大文件上传组件的开发详解](https://github.com/PerkinJ/ExperienceIsTheBestTeacher/blob/master/2017/%E5%9F%BA%E4%BA%8EReact%E7%9A%84%E5%A4%A7%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E7%BB%84%E4%BB%B6%E7%9A%84%E5%BC%80%E5%8F%91%E8%AF%A6%E8%A7%A3.md)
     - [大数据时代数据可视化的概念研究](https://github.com/PerkinJ/ExperienceIsTheBestTeacher/blob/master/2017/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%97%B6%E4%BB%A3%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96%E7%9A%84%E6%A6%82%E5%BF%B5%E7%A0%94%E7%A9%B6.md)
     - [JavaScript 轻量级函数式编程(学习总结)](https://github.com/PerkinJ/ExperienceIsTheBestTeacher/blob/master/2017/JavaScript%20%E8%BD%BB%E9%87%8F%E7%BA%A7%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B(%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93).md)
     - [基于Redux-Form与Redux-Saga的权限验证应用(一)](https://github.com/PerkinJ/ExperienceIsTheBestTeacher/blob/master/2017/%E5%9F%BA%E4%BA%8ERedux-Form%E4%B8%8ERedux-Saga%E7%9A%84%E6%9D%83%E9%99%90%E9%AA%8C%E8%AF%81%E5%BA%94%E7%94%A8(%E4%B8%80).md)
