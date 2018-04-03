@@ -97,8 +97,6 @@ docker 是 C/S 架构，docker client 把命令发给 docker daemon ，然后 da
 
 ## 参考文献
 
-[Docker 入门教程](http://www.ruanyifeng.com/blog/2018/02/docker-tutorial.html)
-
-[docker 的理念与场景](http://taobaofed.org/blog/2016/01/19/feders-should-kown-some-docker-1/)
-
-[docker 架构](http://taobaofed.org/blog/2016/01/21/feders-should-kown-some-docker-2/)
+- [Docker 入门教程](http://www.ruanyifeng.com/blog/2018/02/docker-tutorial.html)
+- [docker 的理念与场景](http://taobaofed.org/blog/2016/01/19/feders-should-kown-some-docker-1/)
+- [docker 架构](http://taobaofed.org/blog/2016/01/21/feders-should-kown-some-docker-2/)
