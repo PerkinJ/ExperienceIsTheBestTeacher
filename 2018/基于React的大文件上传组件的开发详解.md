@@ -4,15 +4,13 @@ category: 前端
 tags: [react,FileReader,文件上传,md5]
 ---
 
-
->    以前实习的时候有做过大文件上传的需求，当时我们团队用的是网宿科技的存储服务，自然而然用的也是他们上传的js-sdk，不管是网宿科技还是七牛等提供存储服务的公司，他们的文件上传底层使用的基本上都是[plupload](http://www.plupload.com/)库。除了这个，百度FEX团队开源的[webuploader](http://fex.baidu.com/webuploader/)也是鼎鼎大名的，当然，对于文件操作的库有许多许多，本文不做过多介绍。
+> 以前实习的时候有做过大文件上传的需求，当时我们团队用的是网宿科技的存储服务，自然而然用的也是他们上传的js-sdk，不管是网宿科技还是七牛等提供存储服务的公司，他们的文件上传底层使用的基本上都是[plupload](http://www.plupload.com/)库。除了这个，百度FEX团队开源的[webuploader](http://fex.baidu.com/webuploader/)也是鼎鼎大名的，当然，对于文件操作的库有许多许多，本文不做过多介绍。
     
-对于一个中小型企业的小项目或者个人项目来说，使用第三方的存储服务也许昂贵了点，且如果上传的文件涉及到隐私的话也是不安全的（各种方案都是因项目而异的）。本文主要讲解在不使用WebUploader，plupload等库的情况下，使用html5的File API来解决大文件上传的问题(本文主要指前端部分)。当然，由于是对内的项目，本文并没有过多考虑浏览器兼容性的问题，毕竟对于IE低版本浏览器来说，Flash可能是最适合的。
+对于一个中小型企业的小项目或者个人项目来说，使用第三方的存储服务也许昂贵了点，且如果上传的文件涉及到隐私的话也是不安全的（各种方案都是因项目而异的）。本文主要讲解在不使用webuploader,plupload等库的情况下，使用html5的File API来解决大文件上传的问题(本文主要指前端部分)。当然，由于是对内的项目，本文并没有过多考虑浏览器兼容性的问题，毕竟对于IE低版本浏览器来说，Flash可能是最适合的。
 
-
+本文主要使用了[antd](https://ant.design/docs/react/introduce-cn)为UI组件，搭建了如下系统。
 
 ### Demo演示
-本文主要使用了[antd](https://ant.design/docs/react/introduce-cn)为UI组件，搭建了如下系统。
 
 下图为文件预加载时的动图，考虑到gif时间的限制，拿了个30多M文件测试。
 
@@ -24,28 +22,30 @@ tags: [react,FileReader,文件上传,md5]
 ![image](http://oum6ifofe.bkt.clouddn.com/image/uploaded.gif)
 
 ### 前后端联调步骤
- 其实之所以不使用WebUploader等库来实现，也是因为后端的需求跟一般的大文件上传有一点不同，所以前端干脆不使用库来写。前后端重点考虑的点，是使用**分片上传**，且每个分片都需要生成md5值，以便后端去校验。因此，每一次分片上传，都需要上传该片段的file,以及chunkMd5，和整个文件的fileMd5。同时，前后端采用arrayBuffer的blob格式来进行文件传输。
+其实之所以不使用WebUploader等库来实现，也是因为后端的需求跟一般的大文件上传有一点不同，所以前端干脆不使用库来写。
 
-**如下为前后端联调的步骤**
+前后端重点考虑的点，是使用**分片上传**，且每个分片都需要生成md5值，以便后端去校验。因此，每一次分片上传，都需要上传该片段的file,以及chunkMd5，和整个文件的fileMd5。同时，前后端采用arrayBuffer的blob格式来进行文件传输。
+
+如下为前后端联调的步骤
 #### 第一步：用户选择文件，进行预处理
-1. 计算总文件的md5值,即fileMd5
-2. 按照固定的分片大小（比如5M，该值为用户自定义），进行切分
-3. 计算每个分片的md5值，chunkMd5,start,end,size等
+- 1. 计算总文件的md5值,即fileMd5
+- 2. 按照固定的分片大小（比如5M，该值为用户自定义），进行切分
+- 3. 计算每个分片的md5值，chunkMd5,start,end,size等
 
 #### 第二步：用户点击上传
-1. 发送第一步生成的json数据到requestUrl
-2. requestUrl接口返回响应，来验证该文件是否已经上传，或者已上传了哪些chunk。（返回的response应该包括每个chunk的状态，即pending or uploaded，第一次上传所有chunk状态都为pending）
-3. 前端过滤掉已经上传的chunks后，对pending状态的chunks构成一个待上传队列进行上传。
-4. 每一个chunk上传到partUpload接口，都应该包括，chunkMd5,start,end以及该分片的arrayBuffer数据。
+- 1. 发送第一步生成的json数据到requestUrl
+- 2. requestUrl接口返回响应，来验证该文件是否已经上传，或者已上传了哪些chunk。（返回的response应该包括每个chunk的状态，即pending or uploaded，第一次上传所有chunk状态都为pending）
+- 3. 前端过滤掉已经上传的chunks后，对pending状态的chunks构成一个待上传队列进行上传。
+- 4. 每一个chunk上传到partUpload接口，都应该包括，chunkMd5,start,end以及该分片的arrayBuffer数据。
 
 #### 第三步：上传结果反馈
-1. partUpload接口会返回该分片上传的基本情况，每一次上传成功，上传队列的个数即减一，这样也可以自定义上传的progress。
-2. 当上传队列个数为0时，此时调用checkUrl，检查整个文件是否上传成功，与前端进行一个同步校验。
+- 1. partUpload接口会返回该分片上传的基本情况，每一次上传成功，上传队列的个数即减一，这样也可以自定义上传的progress。
+- 2. 当上传队列个数为0时，此时调用checkUrl，检查整个文件是否上传成功，与前端进行一个同步校验。
 
 ### 代码拆分
 
 #### 总体架构
-本文Demo主要是对UI组件进行描述，所以没有考虑数据层，读者可以自己配合dva或者redux。下文为主要的代码结构。
+本文Demo主要是对UI组件进行描述，所以没有考虑数据层，读者可以自己配合dva或者redux。下文为主要的代码结构
 
 ```js
 import React, { Component } from 'react'
@@ -165,7 +165,7 @@ export default FileUpload
 | readAsText | file,[encoding] | 将文件读取为文本 |
 | readAsArrayBuffer | file | 将文件读取为ArrayBuffer | 
  
-- 使用Antd的Drager(Uploader)组件，我们可以在props的beforeUpload属性中操作file，也可以通过onChange监听file。当然，使用beforeUpload更加方便。关键代码如下：
+- 使用Antd的Drag(Uploader)组件，我们可以在props的beforeUpload属性中操作file，也可以通过onChange监听file。当然，使用beforeUpload更加方便。关键代码如下：
 
 ```js
 const uploadProp = {
@@ -297,8 +297,7 @@ const uploadProp = {
     ]
 }
 ```
-- 将以上数据post到RequestUrl接口中，会得到如下json数据：
-
+将以上数据post到RequestUrl接口中，会得到如下json数据：
 ```js
 {
     Chunks:[
@@ -355,51 +354,58 @@ const uploadProp = {
       this.handlePartUpload(uploadList)
 
 ```
-- 遍历uploadList的数据，分别将数据传入到uploadUrl接口中。**此过程最关键的，就是如何将分片的arrayBuffer数据如何添加到Blob对象中**
+- 遍历uploadList的数据，分别将数据传入到uploadUrl接口中。**此过程最关键的，就是如何将分片的arrayBuffer数据如何添加到Blob对象中。**
+为了减轻服务器的压力，这里可以采用分治的思想去处理每个分片。对于如何实现分治的思想，请参考本人之前写的博客[由requestAnimationFrame谈浏览器渲染优化](https://github.com/PerkinJ/ExperienceIsTheBestTeacher/blob/master/2017/%E7%94%B1requestAnimationFrame%E8%B0%88%E6%B5%8F%E8%A7%88%E5%99%A8%E6%B8%B2%E6%9F%93%E4%BC%98%E5%8C%96.md)。
 
 ```js
 handlePartUpload = (uploadList)=>{
-    let blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice  
-    // 遍历uploadList
-    uploadList.forEach((value)=>{
-      // 取出每个分片里的基本属性
-      let {fileMd5,chunkMd5,chunk,start,end} = value
-      let formData = new FormData(),
-          //新建一个Blob对象，将对应分片的arrayBuffer加入Blob中
-          blob = new Blob([this.state.arrayBufferData[chunk-1].currentBuffer],{type: 'application/octet-stream'}),
-          // 上传的参数
-          params = `fileMd5=${fileMd5}&chunkMd5=${chunkMd5}&chunk=${chunk}&start=${start}&end=${end}&chunks=${this.state.arrayBufferData.length}`
-      
-      // 将生成blob塞入到formdata中传入服务端
-      formData.append('chunk', blob, chunkMd5)
-      
-      request
-        .post(`http://X.X.X.X/api/upload_file_part?${params}`)
-        .send(formData)
-        .end((err,res)=>{
-          if(res.body.Code === 200){
-            let currentChunks = this.state.currentChunks
-            --currentChunks
-            // 计算上传进度
-            let uploadPercent = Number(((this.state.chunksSize - currentChunks) /this.state.chunksSize * 100).toFixed(2))
-            this.setState({
-              currentChunks,  // 同步当前所需上传的chunks
-              uploadPercent,
-              uploading:true
+    let blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice
+    const _this = this
+    const batchSize = 4,    // 采用分治思想，每批上传的片数，越大越卡
+          total = uploadList.length,   //获得分片的总数
+          batchCount = total / batchSize    // 需要批量处理多少次
+    let batchDone = 0     //已经完成的批处理个数
+    doBatchAppend()
+    function doBatchAppend() {
+      if (batchDone < batchCount) {
+          let list = uploadList.slice(batchSize*batchDone,batchSize*(batchDone+1))
+          setTimeout(()=>silcePart(list),2000);
+      }
+    }
+    
+    function silcePart(list){
+        batchDone += 1;
+        doBatchAppend();
+        list.forEach((value)=>{
+          let {fileMd5,chunkMd5,chunk,start,end} = value
+          let formData = new FormData(),
+              blob = new Blob([_this.state.arrayBufferData[chunk-1].currentBuffer],{type: 'application/octet-stream'}),
+              params = `fileMd5=${fileMd5}&chunkMd5=${chunkMd5}&chunk=${chunk}&start=${start}&end=${end}&chunks=${_this.state.arrayBufferData.length}`
+                
+          formData.append('chunk', blob, chunkMd5)
+          request
+            .post(`http://x.x.x.x/api/contest/upload_file_part?${params}`)
+            .send(formData)
+            .withCredentials()
+            .end((err,res)=>{
+              if(res.body.Code === 200){
+                let currentChunks = this.state.currentChunks
+                --currentChunks
+                // 计算上传进度
+                let uploadPercent = Number(((this.state.chunksSize - currentChunks) /this.state.chunksSize * 100).toFixed(2))
+                this.setState({
+                  currentChunks,  // 同步当前所需上传的chunks
+                  uploadPercent,
+                  uploading:true
+                })
+                if(currentChunks ===0){
+                  // 调用验证api
+                  this.checkUploadStatus(this.state.fileMd5)
+                }
+              }
             })
-            if(currentChunks ===0){
-              // 调用验证api
-              this.checkUpload()
-              message.success('上传成功')
-              this.setState({
-                uploading:false,    // 让进度条消失
-                uploaded:true
-              })
-            }
-          }
-        })
-        
-    })
+      })
+    }
   }
 ```
 
