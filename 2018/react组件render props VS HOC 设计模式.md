@@ -115,6 +115,8 @@ export default WrappedComponent;
 此时，WrappedComponent只是DisplayTheSecret的增强版本，允许我们访问secretToLife属性。
 
 ### Render Props与HOC模式实例对比
+本文以一个利用localStorage API的小例子分别使用HOC设计模式跟The Render Props设计模式编写demo。
+
 #### HOC Example
 ```js
 import React from 'react';
@@ -377,3 +379,5 @@ Render Props对于只读操作非常适用，如跟踪屏幕上的滚动位置�
 [Understanding React Higher-Order Components by Example](https://levelup.gitconnected.com/understanding-react-higher-order-components-by-example-95e8c47c8006)
 
 [Ultimate React Component Patterns with Typescript 2.8](https://levelup.gitconnected.com/ultimate-react-component-patterns-with-typescript-2-8-82990c516935)
+
+[React Component Patterns](https://levelup.gitconnected.com/react-component-patterns-ab1f09be2c82)
